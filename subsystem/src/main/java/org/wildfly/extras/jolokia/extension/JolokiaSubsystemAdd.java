@@ -22,14 +22,42 @@
 
 package org.wildfly.extras.jolokia.extension;
 
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ADD;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ARCHIVE;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.BYTES;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.CONTENT;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.DEPLOYMENT;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ENABLED;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.PATH;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.PERSISTENT;
+import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.RUNTIME_NAME;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.util.Random;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import org.jboss.as.controller.AbstractBoottimeAddStepHandler;
 import org.jboss.as.controller.OperationContext;
 import org.jboss.as.controller.OperationFailedException;
+import org.jboss.as.controller.OperationStepHandler;
+import org.jboss.as.controller.PathAddress;
+import org.jboss.as.controller.PathElement;
+import org.jboss.as.controller.ProcessType;
+import org.jboss.as.controller.operations.common.Util;
+import org.jboss.as.controller.registry.ImmutableManagementResourceRegistration;
 import org.jboss.as.controller.registry.Resource;
 import org.jboss.as.server.AbstractDeploymentChainStep;
 import org.jboss.as.server.DeploymentProcessorTarget;
+import org.jboss.as.server.deployment.Phase;
 import org.jboss.dmr.ModelNode;
-import org.jboss.msc.service.ServiceTarget;
+import org.wildfly.extras.jolokia.deployment.JolokiaModulesProcessor;
+import org.wildfly.extras.jolokia.deployment.JolokiaServletProcessor;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -37,15 +65,37 @@ import org.jboss.msc.service.ServiceTarget;
 class JolokiaSubsystemAdd extends AbstractBoottimeAddStepHandler {
     static final JolokiaSubsystemAdd INSTANCE = new JolokiaSubsystemAdd();
 
+    private String warName;
+
     private JolokiaSubsystemAdd() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    private synchronized String getWarName() {
+        if (warName == null) {
+            warName = "jolokia_" + (Math.abs(new Random().nextInt())) + ".war";
+        }
+        return warName;
+    }
+
     @Override
-    protected void populateModel(ModelNode operation, ModelNode model) throws OperationFailedException {
-        JolokiaDefinition.JOLOKIA_PORT.validateAndSet(operation, model);
+    protected void populateModel(OperationContext context, ModelNode operation, Resource resource) throws OperationFailedException {
+        super.populateModel(context, operation, resource);
+
+        if (context.getProcessType() == ProcessType.STANDALONE_SERVER) {
+            if (requiresRuntime(context)) {  // only add the step if we are going to actually deploy the war
+                PathAddress deploymentAddress = PathAddress.pathAddress(PathElement.pathElement(DEPLOYMENT, getWarName()));
+                ModelNode op = Util.createOperation(ADD, deploymentAddress);
+                op.get(ENABLED).set(true);
+                op.get(PERSISTENT).set(false);
+                op.get(RUNTIME_NAME).set(getWarName());
+                op.get(CONTENT).add(WarUtils.getDummyWar());
+
+                ImmutableManagementResourceRegistration rootResourceRegistration = context.getRootResourceRegistration();
+                OperationStepHandler handler = rootResourceRegistration.getOperationHandler(deploymentAddress, ADD);
+
+                context.addStep(op, handler, OperationContext.Stage.MODEL);
+            }
+        }
     }
 
     /**
@@ -53,12 +103,10 @@ class JolokiaSubsystemAdd extends AbstractBoottimeAddStepHandler {
      */
     @Override
     protected void performBoottime(final OperationContext context, ModelNode model, Resource resource) throws OperationFailedException {
-        final ModelNode portModel = JolokiaDefinition.JOLOKIA_PORT.resolveModelAttribute(context, model);
-        final int port = portModel.isDefined() ? portModel.asInt() : (System.getenv("JOLOKIA_PORT") != null ? Integer.parseInt(System.getenv("JOLOKIA_PORT")) : 9090);
-
         context.addStep(new AbstractDeploymentChainStep() {
             public void execute(DeploymentProcessorTarget processorTarget) {
-                final ServiceTarget serviceTarget = context.getServiceTarget();
+                processorTarget.addDeploymentProcessor(JolokiaExtension.SUBSYSTEM_NAME, Phase.PARSE, Phase.PARSE_WEB_COMPONENTS - 1, new JolokiaServletProcessor(getWarName()));
+                processorTarget.addDeploymentProcessor(JolokiaExtension.SUBSYSTEM_NAME, Phase.DEPENDENCIES, Phase.DEPENDENCIES_JPA - 5, new JolokiaModulesProcessor(getWarName()));
             }
         }, OperationContext.Stage.RUNTIME);
 
