@@ -40,9 +40,13 @@
     <packaging>pom</packaging>
 
     <properties>
+        <server.output.dir.prefix>wildfly-jolokia</server.output.dir.prefix>
+        <!-- Versions -->
         <version.jolokia>1.2.2</version.jolokia>
+        <version.json-simple>1.1.1</version.json-simple>
         <version.wildfly.core>1.0.0.Alpha9</version.wildfly.core>
         <version.wildfly.full>9.0.0.Alpha1</version.wildfly.full>
+        <version.wildfly.tools>1.0.0.Alpha5</version.wildfly.tools>
         <version.undertow>1.2.0.Beta1</version.undertow>
     </properties>
 
@@ -51,8 +55,28 @@
         <module>subsystem</module>
     </modules>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.wildfly.build</groupId>
+                    <artifactId>wildfly-feature-pack-build-maven-plugin</artifactId>
+                    <version>${version.wildfly.tools}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <dependencyManagement>
         <dependencies>
+
+            <!-- Subsystem -->
+
+            <dependency>
+                <groupId>org.wildfly.extras</groupId>
+                <artifactId>jolokia-subsystem</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Jolokia -->
 
@@ -68,12 +92,26 @@
                 <version>${version.jolokia}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.googlecode.json-simple</groupId>
+                <artifactId>json-simple</artifactId>
+                <version>${version.json-simple}</version>
+                <exclusions>
+                    <!-- That's a bug in json-simple that junit is referenced without scope test -->
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
             <!-- WildFly -->
 
             <dependency>
-                <groupId>org.wildfly.core</groupId>
-                <artifactId>wildfly-core-feature-pack</artifactId>
-                <version>${version.wildfly.core}</version>
+                <groupId>org.wildfly</groupId>
+                <artifactId>wildfly-feature-pack</artifactId>
+                <type>zip</type>
+                <version>${version.wildfly.full}</version>
             </dependency>
 
             <dependency>
@@ -92,14 +130,6 @@
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-web-common</artifactId>
                 <version>${version.wildfly.full}</version>
-            </dependency>
-
-            <!-- Undertow -->
-
-            <dependency>
-                <groupId>io.undertow</groupId>
-                <artifactId>undertow-servlet</artifactId>
-                <version>${version.undertow}</version>
             </dependency>
 
         </dependencies>

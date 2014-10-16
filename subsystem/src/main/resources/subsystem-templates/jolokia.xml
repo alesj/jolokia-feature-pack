@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version='1.0' encoding='UTF-8'?>
 <!--
+  ~
   ~ JBoss, Home of Professional Open Source.
   ~ Copyright 2014, Red Hat, Inc., and individual contributors
   ~ as indicated by the @author tags. See the copyright.txt file in the
@@ -20,14 +20,11 @@
   ~ License along with this software; if not, write to the Free
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  ~
   -->
 
-<module xmlns="urn:jboss:module:1.3" name="org.json.simple">
-    <resources>
-        <artifact name="${com.googlecode.json-simple:json-simple}"/>
-    </resources>
-
-    <dependencies>
-        <module name="javax.api"/>
-    </dependencies>
-</module>
+<!--  See src/resources/configuration/ReadMe.txt for how the configuration assembly works -->
+<config>
+    <extension-module>org.wildfly.extras.jolokia</extension-module>
+    <subsystem xmlns="urn:jboss:domain:jolokia:1.0"/>
+</config>

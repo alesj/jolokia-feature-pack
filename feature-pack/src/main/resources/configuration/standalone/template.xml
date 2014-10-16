@@ -6,6 +6,10 @@
         <?EXTENSIONS?>
     </extensions>
 
+    <system-properties>
+        <property name="jolokia.port" value="${env.JOLOKIA_PORT:8778}" />
+    </system-properties>
+
     <management>
         <security-realms>
             <security-realm name="ManagementRealm">
@@ -78,4 +82,5 @@
         <?SOCKET-BINDINGS?>
 
     </socket-binding-group>
+
 </server>
