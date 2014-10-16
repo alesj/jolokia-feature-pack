@@ -24,6 +24,10 @@ package org.wildfly.extras.jolokia.deployment;
 
 import org.jboss.as.server.deployment.DeploymentUnit;
 import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
+import org.jboss.as.web.common.WarMetaData;
+import org.jboss.metadata.web.jboss.JBoss80WebMetaData;
+import org.jboss.metadata.web.jboss.JBossWebMetaData;
+import org.jboss.metadata.web.spec.WebMetaData;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -34,6 +38,16 @@ public class JolokiaServletProcessor extends JolokiaDeploymentUnitProcessor {
     }
 
     protected void deploy(DeploymentUnit unit) throws DeploymentUnitProcessingException {
+        WarMetaData warMetaData = unit.getAttachment(WarMetaData.ATTACHMENT_KEY);
+        if (warMetaData == null)
+            return;
 
+        JBossWebMetaData jBossWebMetaData = warMetaData.getJBossWebMetaData();
+        if (jBossWebMetaData == null) {
+            jBossWebMetaData = new JBoss80WebMetaData();
+            warMetaData.setJBossWebMetaData(jBossWebMetaData);
+        }
+        jBossWebMetaData.setContextRoot("");
+        jBossWebMetaData.setServerInstanceName("jolokia");
     }
 }
