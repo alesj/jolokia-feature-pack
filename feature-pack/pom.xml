@@ -30,7 +30,7 @@
     </parent>
     <artifactId>jolokia-feature-pack</artifactId>
     <name>Jolokia - WildFly Feature Pack</name>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <build>
         <finalName>${server.output.dir.prefix}-${project.version}</finalName>
