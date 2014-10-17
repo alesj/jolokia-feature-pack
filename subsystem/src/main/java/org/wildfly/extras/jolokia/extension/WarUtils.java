@@ -22,7 +22,6 @@
 
 package org.wildfly.extras.jolokia.extension;
 
-import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.ARCHIVE;
 import static org.jboss.as.controller.descriptions.ModelDescriptionConstants.BYTES;
 
 import java.io.ByteArrayOutputStream;
@@ -42,7 +41,6 @@ class WarUtils {
         ModelNode contentItem = new ModelNode();
         byte[] war = getDummyWarBytes();
         contentItem.get(BYTES).set(war);
-        contentItem.get(ARCHIVE).set(true);
         return contentItem;
     }
 
