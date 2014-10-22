@@ -39,7 +39,7 @@
         </server>
         <server name="jolokia">
             <http-listener name="jolokia" socket-binding="jolokia" />
-            <host name="jolokia-host" alias="jolokia">
+            <host name="default-host" alias="jolokia">
                 <filter-ref name="server-header"/>
                 <filter-ref name="x-powered-by-header"/>
             </host>

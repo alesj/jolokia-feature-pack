@@ -27,7 +27,6 @@ import org.jboss.as.server.deployment.DeploymentUnitProcessingException;
 import org.jboss.as.web.common.WarMetaData;
 import org.jboss.metadata.web.jboss.JBoss80WebMetaData;
 import org.jboss.metadata.web.jboss.JBossWebMetaData;
-import org.jboss.metadata.web.spec.WebMetaData;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
@@ -47,7 +46,7 @@ public class JolokiaServletProcessor extends JolokiaDeploymentUnitProcessor {
             jBossWebMetaData = new JBoss80WebMetaData();
             warMetaData.setJBossWebMetaData(jBossWebMetaData);
         }
-        jBossWebMetaData.setContextRoot("");
+        jBossWebMetaData.setContextRoot("jolokia");
         jBossWebMetaData.setServerInstanceName("jolokia");
     }
 }

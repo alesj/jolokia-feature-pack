@@ -46,7 +46,7 @@
         <version.json-simple>1.1.1</version.json-simple>
         <version.wildfly.core>1.0.0.Alpha9</version.wildfly.core>
         <version.wildfly.full>9.0.0.Alpha2-SNAPSHOT</version.wildfly.full>
-        <version.wildfly.tools>1.0.0.Alpha5</version.wildfly.tools>
+        <version.wildfly.tools>1.0.0.Alpha6</version.wildfly.tools>
         <version.undertow>1.2.0.Beta1</version.undertow>
     </properties>
 

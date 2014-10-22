@@ -32,5 +32,7 @@
         <module name="javax.annotation.api"/>
         <module name="sun.jdk"/>
         <module name="javax.servlet.api"/>
+        <module name="org.jolokia.jsr160"/>
+        <module name="org.json.simple"/>
     </dependencies>
 </module>
