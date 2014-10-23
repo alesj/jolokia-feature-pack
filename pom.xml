@@ -47,13 +47,18 @@
         <version.wildfly.core>1.0.0.Alpha9</version.wildfly.core>
         <version.wildfly.full>9.0.0.Alpha2-SNAPSHOT</version.wildfly.full>
         <version.wildfly.tools>1.0.0.Alpha6</version.wildfly.tools>
+        <version.wildfly.arquillian>1.0.0.Alpha2</version.wildfly.arquillian>
         <version.undertow>1.2.0.Beta1</version.undertow>
+        <version.arquillian>1.1.5.Final</version.arquillian>
+        <version.junit>4.11</version.junit>
+        <version.org.apache.httpcomponents>4.3.1</version.org.apache.httpcomponents>
     </properties>
 
     <modules>
         <module>feature-pack</module>
         <module>subsystem</module>
         <module>dist</module>
+        <module>testsuite</module>
     </modules>
 
     <build>
@@ -96,6 +101,12 @@
                 <artifactId>jolokia-feature-pack</artifactId>
                 <version>${project.version}</version>
                 <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.extras</groupId>
+                <artifactId>wildfly-jolokia-dist</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <!-- Jolokia -->
@@ -150,6 +161,37 @@
                 <groupId>org.wildfly</groupId>
                 <artifactId>wildfly-web-common</artifactId>
                 <version>${version.wildfly.full}</version>
+            </dependency>
+
+            <!-- ARQ -->
+
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${version.arquillian}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.wildfly.arquillian</groupId>
+                <artifactId>wildfly-arquillian-container-managed</artifactId>
+                <version>${version.wildfly.arquillian}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Testing -->
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.org.apache.httpcomponents}</version>
             </dependency>
 
         </dependencies>
